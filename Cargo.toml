@@ -1,0 +1,14 @@
+[package]
+name = "sniffer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bpaf = {version = "0.9.3" , features = ["derive", "bright-color"]}
+pcap = {version = "1.1.0"}
+pktparse = { version = "0.7.1", features = ["serde"] }
+nom = "7"
+tls-parser = "0.11.0"
+serde = "1.0"
