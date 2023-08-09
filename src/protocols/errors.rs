@@ -3,5 +3,4 @@ pub enum ProtocolError {
     WrongProtocol,
     ParsingError,
     UnknownProtocol,
-    InvalidPacket,
 }

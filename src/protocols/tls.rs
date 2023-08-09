@@ -2,7 +2,7 @@ use super::errors::ProtocolError;
 use serde::Serialize;
 use tls_parser::{
     parse_tls_extension, TlsClientHelloContents, TlsExtension, TlsMessage, TlsMessageHandshake,
-    TlsServerHelloContents, TlsVersion, TlsMessageApplicationData,
+    TlsServerHelloContents, TlsVersion,
 };
 
 #[derive(Debug, PartialEq, Serialize)]

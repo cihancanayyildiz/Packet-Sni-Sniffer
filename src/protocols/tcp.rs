@@ -1,5 +1,5 @@
 use pktparse::tcp;
-use super::tls::{self, ClientHello};
+use super::tls::{self};
 use super::errors::ProtocolError;
 
 #[derive(Debug, PartialEq)]
@@ -23,12 +23,11 @@ pub fn parse_tcp(payload: &[u8]) -> Result<TCPData, ProtocolError> {
             Ok(TCPData { tcp_type: TCP::TLS(tls), tcp_header})
         }
         else{
+            //println!("{:?}", remaining);
             Err(ProtocolError::UnknownProtocol)
         }
     }
     else {
         Err(ProtocolError::ParsingError)
     }
-
-    
 } 

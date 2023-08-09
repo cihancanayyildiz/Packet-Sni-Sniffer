@@ -16,5 +16,9 @@ pub fn parse_udp(payload: &[u8]) -> Result<(&[u8], UdpData), TryFromSliceError> 
 
     let data = UdpData {src_port, dst_port, length, checksum};
 
+   /*  let (_, payload) = payload.split_at(8);
+
+    println!("udp: payload : {:?}", payload); */
+
     Ok((payload, data))
 }
