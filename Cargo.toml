@@ -12,3 +12,4 @@ pktparse = { version = "0.7.1", features = ["serde"] }
 nom = "7"
 tls-parser = "0.11.0"
 serde = "1.0"
+quic-parser ={ path = "../quic-parser"}

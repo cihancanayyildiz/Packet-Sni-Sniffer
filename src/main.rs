@@ -4,9 +4,11 @@ use crate::protocols::udp::*;
 use crate::protocols::ipv4::*;
 use crate::protocols::tcp::*;
 use pktparse::ethernet::{parse_vlan_ethernet_frame, EtherType};
+use pktparse::ip::IPProtocol;
 use crate::cli::arguments;
 use pcap::Capture;
 use std::time::Instant;
+use quic_parser::quic::QuicPacket;
 
 // to-do 
 // not working on wsl
@@ -31,19 +33,19 @@ pub fn offline_capture(file_path: &str) {
             match frame.ethertype {
                 EtherType::IPv4 => {
                     if let Ok((payload, ipv4data)) = parse_ipv4(payload) {
-                        println!("{:?}",ipv4data);
+                        //println!("{:?}",ipv4data);
                         match ipv4data.protocol_type {
                             IpType::TCP => {
-                                println!("TCP");
+                                //println!("TCP");
                                 match parse_tcp(payload) {
                                     Ok(tcp_data) => {
-                                        println!("{:?}", tcp_data); 
+                                        //println!("{:?}", tcp_data); 
                                         if tcp_data.tcp_header.dest_port == 80 || tcp_data.tcp_header.source_port == 80 {
-                                            println!("HTTP message.");
+                                            //println!("HTTP message.");
                                         } else if tcp_data.tcp_header.dest_port == 443 || tcp_data.tcp_header.source_port == 443 {
-                                            println!("HTTPS message.");
+                                            //println!("HTTPS message.");
                                         } else if tcp_data.tcp_header.dest_port == 22 || tcp_data.tcp_header.source_port == 22 {
-                                            println!("SSH message.");
+                                            //println!("SSH message.");
                                         }
                                     }
                                     Err(e) => println!("{:?}",e),
@@ -69,7 +71,24 @@ pub fn offline_capture(file_path: &str) {
                 }
                 EtherType::IPv6 => {
                     if let Ok((_payload, header)) = pktparse::ipv6::parse_ipv6_header(payload) {
-                        println!("{:?}", header);
+                        let (_, payload) = payload.split_at(40);
+                        match header.next_header {  
+                            IPProtocol::UDP => {
+                                if let Ok((_payload, udp_data)) = pktparse::udp::parse_udp_header(payload) {
+                                    let (_, payload) = payload.split_at(8);
+                                    if udp_data.source_port == 443 || udp_data.dest_port == 443 {
+                                        let qp = QuicPacket::parse(payload);
+                                        let qp_un = qp.unwrap();
+                                        println!("{:?}", qp_un);
+                                    }
+                                }
+                                else {
+                                    println!("Error parsing UDP");
+                                }
+                            }
+                            _ => { println!("rest not supported.")}
+                        }
+                        //println!("{:?}", header);
                     }   
                     else {
                         println!("error parsing ipv6");
